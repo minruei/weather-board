@@ -16,16 +16,17 @@ export default function Home() {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
+  const [ready, setReady] = useState(false)
 
   const [currentWeather, setCurrentWeather] = useState({
-    temperature: 28,
-    feelsLike: 30,
-    description: '晴時多雲',
+    temperature: '--',
+    feelsLike: '--',
+    description: '',
     kind: 'sun',
-    humidity: '72',
-    windSpeed: '12',
-    pressure: '1013',
-    uvIndex: 5,
+    humidity: '--',
+    windSpeed: '--',
+    pressure: '--',
+    uvIndex: 0,
     sunrise: '--:--',
     sunset: '--:--',
     updatedAt: '',
@@ -68,6 +69,7 @@ export default function Home() {
         setCurrentWeather(data.current)
         setDaily(data.dailyForecast)
         setHourly(data.hourlyForecast)
+        setReady(true)
       })
   }, [])
 
@@ -167,17 +169,27 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr] [&>*]:min-w-0">
-          <CurrentWeatherCard weather={currentWeather} todayForecast={todayForecast} />
-          <SunCard weather={currentWeather} />
-        </section>
+        {!ready && (
+          <div className="py-24 text-center text-sm text-slate-400">
+            載入中，正在取得天氣資料...
+          </div>
+        )}
 
-        <HourlyForecast hourly={hourly} />
+        {ready && (
+          <div key={city}>
+            <section className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr] [&>*]:min-w-0">
+              <CurrentWeatherCard weather={currentWeather} todayForecast={todayForecast} />
+              <SunCard weather={currentWeather} />
+            </section>
 
-        <section className="mt-5 grid gap-5 lg:grid-cols-[1.25fr_0.75fr] [&>*]:min-w-0">
-          <DailyForecast daily={daily} />
-          <WeatherTip weather={currentWeather} todayForecast={todayForecast} />
-        </section>
+            <HourlyForecast hourly={hourly} />
+
+            <section className="mt-5 grid gap-5 lg:grid-cols-[1.25fr_0.75fr] [&>*]:min-w-0">
+              <DailyForecast daily={daily} />
+              <WeatherTip weather={currentWeather} todayForecast={todayForecast} />
+            </section>
+          </div>
+        )}
 
         <footer className="mt-10 pb-2 text-center text-xs text-slate-600">
           weather-board · 為Wehelp團隊打造的天氣資訊工具
